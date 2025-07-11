@@ -26,11 +26,11 @@ This repository contains a simple example project demonstrating how to integrate
 
 ## Running the Code
 
-Once you have installed the dependencies and set your API key, start the chatbot interactively. You can optionally choose the model, adjust the temperature, and
-store the conversation in a file. The session continues until you submit an empty line to exit:
+Once you have installed the dependencies and set your API key, start the chatbot interactively. You can optionally choose the model, adjust the temperature, supply an initial system message, limit the length of responses, and store the conversation in a file. The session continues until you submit an empty line to exit:
 
 ```
 python -m src.chatbot [--model MODEL] [--temperature FLOAT] [--history-file PATH]
+                          [--system-message TEXT] [--max-tokens INT]
 ```
 
 Run the test suite to verify everything works as expected:

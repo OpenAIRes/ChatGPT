@@ -20,6 +20,7 @@ def ask(
     messages: List[Dict[str, str]],
     model: str = "gpt-3.5-turbo",
     temperature: float = 0.7,
+    max_tokens: int | None = None,
 ) -> str:
     """Send conversation history to the OpenAI API and return the assistant's response.
 
@@ -31,17 +32,23 @@ def ask(
         Identifier of the model to use.
     temperature:
         Sampling temperature. Higher values yield more random outputs.
+    max_tokens:
+        Limit on the number of tokens in the generated reply. ``None`` uses the
+        API default.
     """
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         raise EnvironmentError("OPENAI_API_KEY not set")
     openai.api_key = api_key
     try:
-        response = openai.ChatCompletion.create(
-            model=model,
-            messages=messages,
-            temperature=temperature,
-        )
+        kwargs = {
+            "model": model,
+            "messages": messages,
+            "temperature": temperature,
+        }
+        if max_tokens is not None:
+            kwargs["max_tokens"] = max_tokens
+        response = openai.ChatCompletion.create(**kwargs)
     except Exception as exc:  # noqa: BLE001 - openai may raise various errors
         logger.exception("OpenAI API request failed")
         raise
@@ -65,9 +72,21 @@ def main() -> None:
         "--history-file",
         help="File path to store the conversation history",
     )
+    parser.add_argument(
+        "--system-message",
+        help="Optional system message to start the conversation",
+    )
+    parser.add_argument(
+        "--max-tokens",
+        type=int,
+        help="Limit the number of tokens generated in each reply",
+    )
     args = parser.parse_args()
 
     messages: List[Dict[str, str]] = []
+
+    if args.system_message:
+        messages.append({"role": "system", "content": args.system_message})
 
     # Load previous history if the file exists
     if args.history_file and os.path.exists(args.history_file):
@@ -82,7 +101,12 @@ def main() -> None:
             break
 
         messages.append({"role": "user", "content": prompt})
-        answer = ask(messages, model=args.model, temperature=args.temperature)
+        answer = ask(
+            messages,
+            model=args.model,
+            temperature=args.temperature,
+            max_tokens=args.max_tokens,
+        )
         messages.append({"role": "assistant", "content": answer})
 
         if args.history_file:
