@@ -2,6 +2,7 @@ import os
 import sys
 import types
 import unittest
+import logging
 
 # Allow import from the src directory
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -118,6 +119,65 @@ class ChatbotTests(unittest.TestCase):
 
         with self.assertRaises(IndexError):
             chatbot.ask([{"role": "user", "content": "Hi"}])
+
+    def test_default_arguments(self):
+        os.environ["OPENAI_API_KEY"] = "dummy-key"
+
+        captured = {}
+
+        def capture_call(**kwargs):
+            captured.update(kwargs)
+
+            class DummyResponse:
+                def __init__(self):
+                    self.choices = [types.SimpleNamespace(message={"content": "ok"})]
+
+            return DummyResponse()
+
+        openai = sys.modules['openai']
+        openai.ChatCompletion = types.SimpleNamespace(create=capture_call)
+
+        chatbot.ask([{"role": "user", "content": "Hi"}])
+
+        self.assertEqual(captured.get("model"), "gpt-3.5-turbo")
+        self.assertEqual(captured.get("temperature"), 0.7)
+
+    def test_custom_arguments(self):
+        os.environ["OPENAI_API_KEY"] = "dummy-key"
+
+        captured = {}
+
+        def capture_call(**kwargs):
+            captured.update(kwargs)
+
+            class DummyResponse:
+                def __init__(self):
+                    self.choices = [types.SimpleNamespace(message={"content": "ok"})]
+
+            return DummyResponse()
+
+        openai = sys.modules['openai']
+        openai.ChatCompletion = types.SimpleNamespace(create=capture_call)
+
+        chatbot.ask(
+            [{"role": "user", "content": "Hi"}],
+            model="gpt-custom",
+            temperature=0.3,
+        )
+
+        self.assertEqual(captured.get("model"), "gpt-custom")
+        self.assertEqual(captured.get("temperature"), 0.3)
+
+    def test_configure_logging_debug_level(self):
+        # Remove any existing handlers so basicConfig has an effect
+        root_logger = logging.getLogger()
+        for handler in list(root_logger.handlers):
+            root_logger.removeHandler(handler)
+        root_logger.setLevel(logging.NOTSET)
+
+        chatbot.configure_logging("debug")
+
+        self.assertEqual(root_logger.level, logging.DEBUG)
 
 
 if __name__ == "__main__":
