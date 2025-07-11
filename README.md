@@ -8,11 +8,17 @@ This repository contains a simple example project demonstrating how to integrate
 - Provide example code that can be extended into a full-featured chatbot.
 - Document setup steps and usage instructions.
 
+## Directory Structure
+
+- `src/` - application source code
+- `tests/` - unit tests
+- `docs/` - project documentation
+
 ## Getting Started
 
 1. Install dependencies with `pip install openai`.
 2. Set your API key in the `OPENAI_API_KEY` environment variable.
-3. Run the example script to interact with the chatbot.
+3. Run the example script to interact with the chatbot: `python -m src.chatbot`.
 
 ## License
 
