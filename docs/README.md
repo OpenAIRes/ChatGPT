@@ -1,7 +1,28 @@
 # Documentation
 
-This directory will contain detailed documentation for the project. The chatbot now supports a running conversation, so example sessions will show multiple user and assistant messages.
+This directory collects detailed guides for setting up and running the example chatbot.
 
-- `src/` holds the application source code.
-- `tests/` contains test suites.
-- `docs/` stores documentation assets.
+## Setup
+
+1. Install the required package:
+   ```bash
+   pip install openai
+   ```
+2. Export your OpenAI API key so the code can authenticate:
+   ```bash
+   export OPENAI_API_KEY=sk-<your-key>
+   ```
+3. (Optional) Run the test suite to confirm everything is configured correctly:
+   ```bash
+   python -m unittest discover tests
+   ```
+
+## Usage Example
+
+Start an interactive session by running the chatbot module directly:
+
+```bash
+python -m src.chatbot
+```
+
+Each prompt you enter is sent to the API and the assistant responds. Submit an empty line at the `You:` prompt to end the conversation.
