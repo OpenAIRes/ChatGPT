@@ -22,7 +22,7 @@ This repository contains a simple example project demonstrating how to integrate
 
 ## Running the Code
 
-Once you have installed the dependencies and set your API key, start the chatbot interactively:
+Once you have installed the dependencies and set your API key, start the chatbot interactively. The chat session keeps a history of your conversation until you submit an empty line to exit:
 
 ```
 python -m src.chatbot
