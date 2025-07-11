@@ -31,12 +31,15 @@ Each prompt you enter is sent to the API and the assistant responds. Submit an e
 
 ## Logging
 
-The example configures Python's built-in `logging` module. Adjust the verbosity
-with the `LOG_LEVEL` environment variable:
+`src.chatbot` uses the standard logging module but can emit structured logs via
+`structlog`. Adjust the verbosity with the `LOG_LEVEL` environment variable:
 
 ```bash
 LOG_LEVEL=DEBUG python -m src.chatbot
 ```
 
-For larger applications consider using a dedicated logging framework like
-`structlog` to emit structured logs.
+Install `structlog` to enable JSON formatted logs:
+
+```bash
+pip install structlog
+```
