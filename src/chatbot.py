@@ -1,4 +1,5 @@
 import os
+import argparse
 import openai
 from typing import List, Dict
 
@@ -32,15 +33,45 @@ def ask(
 
 
 def main() -> None:
-    """Start an interactive chat session maintaining conversation history."""
+    """Start an interactive chat session with optional history persistence."""
+
+    parser = argparse.ArgumentParser(description="Simple ChatGPT command-line interface")
+    parser.add_argument("--model", default="gpt-3.5-turbo", help="Model identifier")
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=0.7,
+        help="Sampling temperature for response generation",
+    )
+    parser.add_argument(
+        "--history-file",
+        help="File path to store the conversation history",
+    )
+    args = parser.parse_args()
+
     messages: List[Dict[str, str]] = []
+
+    # Load previous history if the file exists
+    if args.history_file and os.path.exists(args.history_file):
+        with open(args.history_file, "r", encoding="utf-8") as f:
+            for line in f:
+                role, content = line.rstrip("\n").split("\t", 1)
+                messages.append({"role": role, "content": content})
+
     while True:
         prompt = input("You: ")
         if not prompt:
             break
+
         messages.append({"role": "user", "content": prompt})
-        answer = ask(messages)
+        answer = ask(messages, model=args.model, temperature=args.temperature)
         messages.append({"role": "assistant", "content": answer})
+
+        if args.history_file:
+            with open(args.history_file, "a", encoding="utf-8") as f:
+                f.write(f"user\t{prompt}\n")
+                f.write(f"assistant\t{answer}\n")
+
         print("Assistant:", answer)
 
 

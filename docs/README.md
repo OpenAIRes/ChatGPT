@@ -19,10 +19,10 @@ This directory collects detailed guides for setting up and running the example c
 
 ## Usage Example
 
-Start an interactive session by running the chatbot module directly:
+Start an interactive session by running the chatbot module directly. Command-line options let you configure the model, temperature, and store history in a file:
 
 ```bash
-python -m src.chatbot
+python -m src.chatbot [--model MODEL] [--temperature FLOAT] [--history-file PATH]
 ```
 
 Each prompt you enter is sent to the API and the assistant responds. Submit an empty line at the `You:` prompt to end the conversation.
