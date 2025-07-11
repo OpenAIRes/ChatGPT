@@ -1,19 +1,33 @@
 import os
 import argparse
 import logging
-import openai
 from typing import List, Dict
 
+import openai
 
-logger = logging.getLogger(__name__)
+try:
+    import structlog
+except ModuleNotFoundError:  # pragma: no cover - structlog not installed
+    structlog = None  # type: ignore
+
+
+logger = structlog.get_logger() if structlog else logging.getLogger(__name__)
 
 
 def configure_logging(level: str = "INFO") -> None:
-    """Configure basic logging for the application."""
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    )
+    """Configure logging using structlog if available."""
+    numeric_level = logging.getLevelName(level.upper())
+    logging.basicConfig(level=numeric_level, format="%(message)s")
+    if structlog:
+        structlog.configure(
+            logger_factory=structlog.stdlib.LoggerFactory(),
+            wrapper_class=structlog.make_filtering_bound_logger(numeric_level),
+            processors=[
+                structlog.processors.TimeStamper(fmt="iso"),
+                structlog.processors.format_exc_info,
+                structlog.processors.JSONRenderer(),
+            ],
+        )
 
 
 def ask(
@@ -58,7 +72,7 @@ def ask(
 def main() -> None:
     """Start an interactive chat session with optional history persistence."""
 
-    configure_logging()
+    configure_logging(os.getenv("LOG_LEVEL", "INFO"))
 
     parser = argparse.ArgumentParser(description="Simple ChatGPT command-line interface")
     parser.add_argument("--model", default="gpt-3.5-turbo", help="Model identifier")

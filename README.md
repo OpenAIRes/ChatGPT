@@ -41,15 +41,19 @@ python -m unittest discover tests
 
 ## Logging
 
-Basic logging is configured in `src.chatbot`. Set the `LOG_LEVEL` environment
+`src.chatbot` uses `structlog` when available for structured output and falls
+back to the standard library otherwise. Set the `LOG_LEVEL` environment
 variable to control verbosity. For example:
 
 ```bash
 LOG_LEVEL=DEBUG python -m src.chatbot
 ```
 
-For production deployments you may want a more advanced logging framework such
-as `structlog` or `loguru` for structured output and better integrations.
+To enable JSON formatted logs in production, install `structlog`:
+
+```bash
+pip install structlog
+```
 
 ## Contributing
 
