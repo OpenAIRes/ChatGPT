@@ -55,6 +55,22 @@ To enable JSON formatted logs in production, install `structlog`:
 pip install structlog
 ```
 
+## Packaging
+
+All packaging metadata resides in `pyproject.toml`. The project is named
+`chatgpt-example` and exposes a console script called `chatbot` that points to
+`src.chatbot:main`. The core dependency is `openai` with an optional `logging`
+extra that installs `structlog`.
+
+To build distributable archives, install `build` and run:
+
+```bash
+python -m build
+```
+
+This creates wheel and source distributions in the `dist/` directory that can be
+uploaded to a package index or installed locally with `pip`.
+
 ## Contributing
 
 Contributions are welcome! To contribute:
