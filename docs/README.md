@@ -27,3 +27,15 @@ python -m src.chatbot [--model MODEL] [--temperature FLOAT] [--history-file PATH
 ```
 
 Each prompt you enter is sent to the API and the assistant responds. Submit an empty line at the `You:` prompt to end the conversation.
+
+## Logging
+
+The example configures Python's built-in `logging` module. Adjust the verbosity
+with the `LOG_LEVEL` environment variable:
+
+```bash
+LOG_LEVEL=DEBUG python -m src.chatbot
+```
+
+For larger applications consider using a dedicated logging framework like
+`structlog` to emit structured logs.

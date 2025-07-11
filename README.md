@@ -39,6 +39,18 @@ Run the test suite to verify everything works as expected:
 python -m unittest discover tests
 ```
 
+## Logging
+
+Basic logging is configured in `src.chatbot`. Set the `LOG_LEVEL` environment
+variable to control verbosity. For example:
+
+```bash
+LOG_LEVEL=DEBUG python -m src.chatbot
+```
+
+For production deployments you may want a more advanced logging framework such
+as `structlog` or `loguru` for structured output and better integrations.
+
 ## Contributing
 
 Contributions are welcome! To contribute:
