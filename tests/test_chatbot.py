@@ -20,6 +20,34 @@ class ChatbotTests(unittest.TestCase):
         with self.assertRaises(EnvironmentError):
             chatbot.ask([{"role": "user", "content": "Hello"}])
 
+    def test_empty_response(self):
+        # Set API key so ask() proceeds
+        os.environ["OPENAI_API_KEY"] = "dummy-key"
+
+        # Stub ChatCompletion.create to return an empty message
+        class DummyResponse:
+            def __init__(self):
+                self.choices = [types.SimpleNamespace(message={"content": ""})]
+
+        openai = sys.modules['openai']
+        openai.ChatCompletion = types.SimpleNamespace(create=lambda **_: DummyResponse())
+
+        result = chatbot.ask([{"role": "user", "content": "Hi"}])
+        self.assertEqual(result, "")
+
+    def test_api_error(self):
+        # Set API key so ask() proceeds
+        os.environ["OPENAI_API_KEY"] = "dummy-key"
+
+        def raise_error(**_):
+            raise RuntimeError("API error")
+
+        openai = sys.modules['openai']
+        openai.ChatCompletion = types.SimpleNamespace(create=raise_error)
+
+        with self.assertRaises(RuntimeError):
+            chatbot.ask([{"role": "user", "content": "Hello"}])
+
 
 if __name__ == "__main__":
     unittest.main()
