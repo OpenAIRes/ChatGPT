@@ -4,10 +4,11 @@ This directory collects detailed guides for setting up and running the example c
 
 ## Setup
 
-1. Install the required package:
+1. Install the project locally using pip:
    ```bash
-   pip install openai
+   pip install -e ..
    ```
+   This command installs the `chatbot` console script along with the `openai` dependency.
 2. Export your OpenAI API key so the code can authenticate:
    ```bash
    export OPENAI_API_KEY=sk-<your-key>
