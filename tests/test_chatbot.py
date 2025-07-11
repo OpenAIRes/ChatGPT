@@ -48,6 +48,26 @@ class ChatbotTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             chatbot.ask([{"role": "user", "content": "Hello"}])
 
+    def test_max_tokens_argument(self):
+        os.environ["OPENAI_API_KEY"] = "dummy-key"
+
+        captured: dict = {}
+
+        def capture_call(**kwargs):
+            captured.update(kwargs)
+
+            class DummyResponse:
+                def __init__(self):
+                    self.choices = [types.SimpleNamespace(message={"content": "hi"})]
+
+            return DummyResponse()
+
+        openai = sys.modules['openai']
+        openai.ChatCompletion = types.SimpleNamespace(create=capture_call)
+
+        chatbot.ask([{"role": "user", "content": "Hi"}], max_tokens=42)
+        self.assertEqual(captured.get("max_tokens"), 42)
+
 
 if __name__ == "__main__":
     unittest.main()
