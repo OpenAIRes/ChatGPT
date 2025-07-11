@@ -69,5 +69,56 @@ class ChatbotTests(unittest.TestCase):
         self.assertEqual(captured.get("max_tokens"), 42)
 
 
+
+    def test_no_max_tokens_argument(self):
+        os.environ["OPENAI_API_KEY"] = "dummy-key"
+
+        captured = {}
+
+        def capture_call(**kwargs):
+            captured.update(kwargs)
+
+            class DummyResponse:
+                def __init__(self):
+                    self.choices = [types.SimpleNamespace(message={"content": "hi"})]
+
+            return DummyResponse()
+
+        openai = sys.modules['openai']
+        openai.ChatCompletion = types.SimpleNamespace(create=capture_call)
+
+        chatbot.ask([{"role": "user", "content": "Hi"}])
+        self.assertNotIn("max_tokens", captured)
+
+    def test_multiple_choices(self):
+        os.environ["OPENAI_API_KEY"] = "dummy-key"
+
+        class DummyResponse:
+            def __init__(self):
+                self.choices = [
+                    types.SimpleNamespace(message={"content": "first"}),
+                    types.SimpleNamespace(message={"content": "second"}),
+                ]
+
+        openai = sys.modules['openai']
+        openai.ChatCompletion = types.SimpleNamespace(create=lambda **_: DummyResponse())
+
+        result = chatbot.ask([{"role": "user", "content": "Hi"}])
+        self.assertEqual(result, "first")
+
+    def test_no_choices_in_response(self):
+        os.environ["OPENAI_API_KEY"] = "dummy-key"
+
+        class DummyResponse:
+            def __init__(self):
+                self.choices = []
+
+        openai = sys.modules['openai']
+        openai.ChatCompletion = types.SimpleNamespace(create=lambda **_: DummyResponse())
+
+        with self.assertRaises(IndexError):
+            chatbot.ask([{"role": "user", "content": "Hi"}])
+
+
 if __name__ == "__main__":
     unittest.main()
