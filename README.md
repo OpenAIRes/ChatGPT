@@ -16,7 +16,11 @@ This repository contains a simple example project demonstrating how to integrate
 
 ## Getting Started
 
-1. Install dependencies with `pip install openai`.
+1. Install the project in editable mode:
+   ```bash
+   pip install -e .
+   ```
+   This installs the `chatbot` command and pulls in the required `openai` dependency.
 2. Set your API key in the `OPENAI_API_KEY` environment variable.
 3. Run the example script to interact with the chatbot: `python -m src.chatbot`.
 
